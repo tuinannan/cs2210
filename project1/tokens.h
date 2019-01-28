@@ -1,0 +1,42 @@
+#ifndef __TOKENS__
+#define __TOKENS__
+#define VOIDnum 4000
+#define IFnum 4001
+#define ELSEnum 4002
+#define CLASSnum 4003
+#define WHILEnum 4004
+#define VALnum 4005
+#define METHODnum 4006
+#define INTnum 4007
+#define PROGRAMnum 4008
+#define ANDnum 4009
+#define ASSGNnum 4010
+#define DECLARATIONnum 4011
+#define DOTnum 4012
+#define ENDDECLARATIONSnum 4013
+#define EQUALnum 4014
+#define GTnum 4015
+#define IDnum 4016
+#define LBRACnum 4017
+#define LPARENnum 4018
+#define NEnum 4019
+#define ORnum 4020
+#define RBRACnum 4021
+#define RPARENnum 4022
+#define SEMInum 4023
+#define COMMAnum 4024
+#define DIVIDEnum 4025
+#define EQnum 4026
+#define GEnum 4027
+#define ICONSTnum 4028
+#define LBRACEnum 4029
+#define LEnum 4030
+#define LTnum 4031
+#define MINUSnum 4032
+#define NOTnum 4033
+#define PLUSnum 4034
+#define RBRACEnum 4035
+#define SCONSTnum 4036
+#define TIMESnum 4037
+#define EOFnum 0
+#endif
