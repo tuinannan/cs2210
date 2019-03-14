@@ -38,5 +38,6 @@
 #define RBRACEnum 4035
 #define SCONSTnum 4036
 #define TIMESnum 4037
+#define RETURNnum 4038
 #define EOFnum 0
 #endif

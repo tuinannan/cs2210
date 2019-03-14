@@ -1,14 +1,19 @@
 %{           
+
+/* Name: Yanan Guo */
+
 #include <stdio.h>  
 #include <string.h>
-#include "tokens.h"
+#include "y.tab.h"
 #include "toString.h"
 #define LIMIT1 500    
-//extern char *yytext;
+/*required global var */
 int yylval = 0;
 int yyline = 1;
 int yycolumn = 1;
 int yylength = 0;
+
+/* assisted global var*/
 char a[] = " ";    
 int SymbolNum = 0;
 char *SymbolChart[LIMIT1];
@@ -17,7 +22,10 @@ int SymbolLength[LIMIT1];
 int AfterProcessLeng;
 int flag;
 int SearchIndex_Global;
- int TableInsert( char *j)
+
+/* This function is to add a new string or identifier in string table */
+
+int TableInsert( char *j)
  {
     char *p = (char*)malloc(AfterProcessLeng * sizeof(char));
     for (int i = 0; i < AfterProcessLeng; i++)
@@ -33,14 +41,17 @@ int SearchIndex_Global;
     if(SymbolNum == 1) return 0;
     else return SymbolPositionNext[SymbolNum - 2];
  }
- char* PreProcessString()
+
+
+/* This function is to deal with the single quotes and escape sequences in
+ * string constants*/
+char* PreProcessString()
  {
     flag = 0;
     char *q = (char*)malloc(yyleng * sizeof(char));
     int mark [100] = {0};
     AfterProcessLeng = yyleng;
     for (int i = 0; i< yyleng; i++) q[i] = yytext[i];
-   // if yyleng == 2 q = NULL; 
     for (int i = 0; i< yyleng; i++)
     {
         if (i == 0 || i == (yyleng - 1)) 
@@ -86,6 +97,7 @@ int SearchIndex_Global;
  
  }
 
+/* This function is to build a string to store the identifier */
  char * PreProcessID() 
  {
      char *n = (char*)malloc(yyleng * sizeof(char));
@@ -94,6 +106,8 @@ int SearchIndex_Global;
      return n;
  }
 
+/* This function is to check is the string or identifier already in the string
+ * table*/
  int SearchTable(char *a)
  {
     int SearchFlag = 0;
@@ -126,39 +140,44 @@ int SearchIndex_Global;
  
  }
 
+ /* This function is used to print all the tokens and the corresponding position
+  * (line and column) */
  void printf_result (char* KeyWord)
  {
     char *m; 
     int SearchResult;
     int TableIndex;
-    yycolumn += yyleng;
+    if (strcmp(KeyWord, "EOFnum") != 0) yycolumn += yyleng;
+    
+    if(strcmp(KeyWord, "ICONSTnum") == 0)
+    {
+        yylval = atoi(yytext);
+    }
+    
     if (strcmp(KeyWord, "IDnum") == 0 || strcmp(KeyWord, "SCONSTnum") == 0)
     {
         if (strcmp(KeyWord, "SCONSTnum") == 0) 
         {    
-            //printf("string = %s\n", yytext);
             m = PreProcessString();
         }
         else m =PreProcessID();
         SearchResult = SearchTable(m); 
-        //printf("search result = %d\n", SearchResult);
         if (SearchResult == 0) TableIndex = TableInsert(m);
         else TableIndex = SearchIndex_Global;
         
-        printf("%-10d%-10d%-20s%-10d%-20s\n", yyline, yycolumn, KeyWord, TableIndex, yytext);
+        printf("%-10d%-10d%-20s%-10d\n", yyline, yycolumn, KeyWord, TableIndex);
     }
+    
+    
     else
     {
 
-        printf("%-10d%-10d%-20s%-10s%-20s\n", yyline, yycolumn, KeyWord, a, yytext);
+        printf("%-10d%-10d%-20s%-10s\n", yyline, yycolumn, KeyWord, a);
     }
     
-   // yycolumn += yyleng;
  }
 
- 
-
-
+ /* called by ErrorHandler function */
  void BadStringHandler()
  {
     printf("Error: Unmatched string constant, at line %d column %d\n", yyline, yycolumn);
@@ -166,36 +185,34 @@ int SearchIndex_Global;
     yycolumn = 1;
     
  }
-
+/* called by ErrorHandler function */
  void BadIDHandler()
  {
     printf("Error: Malformed identifier '%s', at line %d column %d\n", yytext, yyline, yycolumn);
     yycolumn += yyleng;
  
  }
-
+/* called by ErrorHandler function */
  void ElseErrorHandler()
  {
-    printf("Undefined Symbol '%s', at line %d column %d\n", yytext, yyline, yycolumn);
+    printf("Error: Undefined Symbol '%s', at line %d column %d\n", yytext, yyline, yycolumn);
  }
-
+/* called by ErrorHandler function */
  void BadCommHandler()
  {
     printf("Error:  EOF found in comment at line %d column %d\n", yyline, yycolumn);
  }
-
-
-
+/* deal with all the errors */
 void ErrorHandler(char *Keyword)
 {
-    if(strcmp(Keyword, "BADID") == 0) BadIDHandler();
-    else if (strcmp(Keyword, "BADSCONST") == 0) BadStringHandler();
+    if (strcmp(Keyword, "BADID") == 0) BadIDHandler();
+    else if(strcmp(Keyword, "BADSCONST") == 0) BadStringHandler();
     else if (strcmp(Keyword, "BADCOMMENT") == 0) BadCommHandler();
     else ElseErrorHandler();
 
-    
 
 }
+/* this function is used to calculate the yyline and yycolumn change in comment */
  void ProcessComment()
  {
     for (int i = 0; i < yyleng; i++)
@@ -211,7 +228,6 @@ void ErrorHandler(char *Keyword)
 
 
 extern FILE *yyin;
-int sem_count = 0;
 
 %}
 
@@ -229,7 +245,7 @@ IFnum                   if
 VOIDnum                 void
 DECLARATIONnum          declarations
 ENDDECLARATIONSnum      enddeclarations
-
+RETURNnum		return
 
 ANDnum                  &&
 ASSGNnum                :=
@@ -267,10 +283,25 @@ Whitespace2             [ \t]*
 ElseError               .    
 %%
 
+{VOIDnum}                 {return VOIDnum;}         
+{IFnum}                   {return IFnum;}
+{ELSEnum}                 {return ELSEnum;}
+{CLASSnum}                {return CLASSnum;} 
+{WHILEnum}                {return WHILEnum;} 
+{VALnum}                  {return VALnum;}
+{METHODnum}               {return METHODnum;}
+{RETURNnum}	          {return RETURNnum;}
+{INTnum}                  {return INTnum;}
+{PROGRAMnum}              {return PROGRAMnum;}
+{ANDnum}                  {return ANDnum;}
+{ASSGNnum}                {return ASSGNnum;}
+{DECLARATIONnum}          {return DECLARATIONnum;}
+{DOTnum}                  {return DOTnum;}
+{ENDDECLARATIONSnum}      {return ENDDECLARATIONSnum;}
 {EQUALnum}                {return EQUALnum;}
 {GTnum}                   {return GTnum;}
 {IDnum}                   {return IDnum;}
-{BADID}                   {BadIDHandler();}
+{BADID}                   {ErrorHandler("BADID");}
 {LBRACnum}                {return LBRACnum;}
 {LPARENnum}               {return LPARENnum;}
 {NEnum}                   {return NEnum;}
@@ -291,13 +322,13 @@ ElseError               .
 {PLUSnum}                 {return PLUSnum;}
 {RBRACEnum}               {return RBRACEnum;} 
 {SCONSTnum}               {return SCONSTnum;}
-{BADSCONST}               {BadStringHandler();}
+{BADSCONST}               {ErrorHandler("BADSCONST");}
 {TIMESnum}                {return TIMESnum;} 
 {COMMENT}                 {ProcessComment();}
-{BADCOMMENT}              {ProcessComment(); BadCommHandler();}
+{BADCOMMENT}              {ProcessComment(); ErrorHandler("BADCOMMENT");}
 {Whitespace}        	  {yyline ++; yycolumn = 1;}  
 {Whitespace2}             {yycolumn += yyleng;}
-{ElseError}               {ElseErrorHandler();}
+{ElseError}               {ErrorHandler("ElseError");}
 <<EOF>>                   {return EOFnum;}
 %%
 
@@ -310,13 +341,12 @@ int main(int avgs, char *avgr[])
         return 0;
     }
    
-    printf("%-10s%-10s%-20s%-10s%-20s\n", "yyline", "yycolumn", "KeyWord", "TbIndex", "yytext");
+    printf("%-10s%-10s%-20s%-10s\n", "yyline", "yycolumn", "KeyWord", "TbIndex");
     
     while (returnval = yylex())
     {
       
         printf_result(toString(returnval));
-    
     }
     printf_result(toString(returnval));
     printf("\n");
@@ -327,7 +357,13 @@ int main(int avgs, char *avgr[])
         printf("%s ", SymbolChart[i]);
     
     }
+
     printf("\n");
+    
+    for (int i = 0; i < 20; i++)
+    {
+    	printf("%d ", SymbolPositionNext[i]);
+    }
     
     fclose(yyin);
 

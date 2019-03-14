@@ -1,11 +1,14 @@
+char *toString(int caseNum)
+{
 switch(caseNum) {
     case VOIDnum:                 return "VOIDnum";         
-    case IFnum:                   return IFnum;
-    case ELSEnum:                 return ELSEnum;
-    case CLASSnum:                return CLASSnum;
+    case IFnum:                   return "IFnum";
+    case ELSEnum:                 return "ELSEnum";
+    case CLASSnum:                return "CLASSnum";
     case WHILEnum:                return "WHILEnum";
     case VALnum:                  return "VALnum";
     case METHODnum:               return "METHODnum";
+    case RETURNnum: 	          return "RETURNnum";
     case INTnum:                  return "INTnum";
     case PROGRAMnum:              return "PROGRAMnum";
     case ANDnum:                  return "ANDnum";
@@ -37,4 +40,6 @@ switch(caseNum) {
     case RBRACEnum:               return "RBRACEnum";
     case SCONSTnum:               return "SCONSTnum";
     case TIMESnum:                return "TIMESnum";
+     case EOFnum:                  return "EOFnum";
+}
 }
