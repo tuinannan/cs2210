@@ -243,22 +243,22 @@
                 ;
  
  Expression : SimpleExpression { $$ = $1; }
-            | SimpleExpression Sim_c SimpleExpression { printf("aaa%s\n", $2); MkLeftC($1, $2); $$
+            | SimpleExpression Sim_c SimpleExpression { printf("aaa%s\n", $1); MkLeftC($1, $2); $$
               = MkRightC($3, $2);}
             ;
 
  Sim_c : LEnum 
-         {MakeTree(LEOp, NullExp(), NullExp()); }
+         {$$=MakeTree(LEOp, NullExp(), NullExp()); }
        | LTnum
-         {MakeTree(LTOp, NullExp(), NullExp()); }
+         {$$=MakeTree(LTOp, NullExp(), NullExp()); }
        | EQnum 
-         {MakeTree(EQOp, NullExp(), NullExp()); }
+         {$$=MakeTree(EQOp, NullExp(), NullExp()); }
        | NEnum
-         {MakeTree(NEOp, NullExp(), NullExp()); }
+         {$$=MakeTree(NEOp, NullExp(), NullExp()); }
        | GEnum
-         {MakeTree(GEOp, NullExp(), NullExp()); }
+         {$$=MakeTree(GEOp, NullExp(), NullExp()); }
        | GTnum
-         {MakeTree(GTOp, NullExp(), NullExp()); }
+         {$$=MakeTree(GTOp, NullExp(), NullExp()); }
        ;
  
  SimpleExpression : Term { $$ = $1; }
