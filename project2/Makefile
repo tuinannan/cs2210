@@ -13,5 +13,11 @@ y.tab.c: test.y
 lex.yy.c: minijavalex.l y.tab.c
 	$(LEX) minijavalex.l
 
+test: parser
+	./parser < proj2_tests/src1 > src1.out
+
+gdb: parser
+	gdb -ex 'set args < proj2_tests/src1' parser
+
 clean:
 	rm y.tab.c lex.yy.c y.tab.h y.output parser
