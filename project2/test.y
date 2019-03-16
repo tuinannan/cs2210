@@ -19,7 +19,7 @@
                 ENDDECLARATIONSnum EQnum EQUALnum GEnum GTnum ICONSTnum IDnum IFnum INTnum 
                 LBRACEnum LBRACnum LEnum LPARENnum LTnum METHODnum MINUSnum NEnum NOTnum ORnum 
                 PLUSnum PROGRAMnum RBRACEnum RBRACnum RETURNnum RPARENnum SCONSTnum SEMInum 
-                TIMESnum VALnum VOIDnum WHILEnum EOFnum
+                TIMESnum VALnum VOIDnum WHILEnum EOFnum 
   %type <tptr> 
  Program ClassDecl_m ClassDecl ClassBody Decls FieldDecl_m FieldDecl Field_1 VariableDeclId 
          VariableInitializer ArrayInitializer VariableInitializer_c ArrayCreationExpression 
@@ -45,6 +45,7 @@
 
   ClassBody : LBRACEnum Decls MethodDecl_m RBRACEnum  { $$ = MkLeftC($2, $3); }
             | LBRACEnum RBRACEnum  { $$ = NullExp(); }
+            | LBRACEnum MethodDecl_m RBRACEnum { $$ = $2;}
             ;
   
   Decls : DECLARATIONnum FieldDecl_m ENDDECLARATIONSnum { $$ = $2; }
@@ -60,12 +61,12 @@
   Field_1 : VariableDeclId COMMAnum Field_1  { $$ = MkLeftC(MakeTree(DeclOp,
             NullExp(), MakeTree(CommaOp, $1, MakeTree(CommaOp, type_g, NullExp()))), 
             $3); }
-          | VariableDeclId EQnum VariableInitializer COMMAnum Field_1 { $$ =
+          | VariableDeclId EQUALnum VariableInitializer COMMAnum Field_1 { $$ =
             MkLeftC(MakeTree(DeclOp, NullExp(), MakeTree(CommaOp, $1,
             MakeTree(CommaOp, $1, MakeTree(COMMAnum, type_g, $3)))), $3); }
           | VariableDeclId SEMInum  { $$ = MakeTree(DeclOp, NullExp(),
             MakeTree(CommaOp, $1, MakeTree(CommaOp, type_g, NullExp()))); }  
-          | VariableDeclId EQnum VariableInitializer SEMInum { $$ =
+          | VariableDeclId EQUALnum VariableInitializer SEMInum { $$ =
             MakeTree(DeclOp, NullExp(), MakeTree(CommaOp, $1, MakeTree(CommaOp,
             type_g, $3))); } 
           ;
@@ -191,8 +192,11 @@
  StatementList : LBRACEnum Statement_m RBRACEnum { $$ = $2; }
                ;
  
- Statement_m : Statement_m Statement { $$ = MakeTree(StmtOp, $1, $2); }
-             | Statement { $$ = MakeTree(StmtOp, NullExp(), $1); }
+ Statement_m : Statement { $$ = MakeTree(StmtOp, NullExp(), $1); }
+             | Statement_m SEMInum Statement 
+                { 
+                  if($3 == NullExp()) {$$ = $1;}
+                  else{$$ = MakeTree(StmtOp, $1, $3);} }
              ;
 
  Statement : AssignmentStatement
@@ -200,7 +204,8 @@
            | ReturnStatement
            | IfStatement
            | WhileStatement
-           | { $$ = NullExp();}
+           | 
+             { $$ = NullExp();}
            ;
  
  AssignmentStatement : Variable EQUALnum Expression { $$ = MakeTree(AssignOp,
@@ -223,28 +228,22 @@
                    NullExp()); }
                  | RETURNnum { $$ = MakeTree(ReturnOp, NullExp(), NullExp()); }
                  ;
- 
+
  IfStatement : If_c { $$ = $1; }
-             | If_cc If_c { MkLeftC($1, $2); }
-             | If_cc If_c ELSEnum StatementList { $$ = MakeTree(IfElseOp,
-               MkLeftC($1, $2), $4); }
-             | If_c ELSEnum StatementList { $$ = MakeTree(IfElseOp, $1, $3); }
-             ;
+             | IfStatement ELSEnum If_c { $$ = MkLeftC($1, $3); }
+             | IfStatement ELSEnum StatementList { $$ = MakeTree(IfElseOp, $1,
+               $3); }
 
  If_c : IFnum Expression StatementList { $$ = MakeTree(IfElseOp, NullExp(),
         MakeTree(CommaOp, $2, $3)); }
       ;
-
- If_cc : If_cc If_c ELSEnum { $$ = MkLeftC($1, $2); }
-       | If_c ELSEnum { $$ = $1; }
-       ;
 
  WhileStatement : WHILEnum Expression StatementList { $$ = MakeTree(LoopOp, $2,
                   $3); }
                 ;
  
  Expression : SimpleExpression { $$ = $1; }
-            | SimpleExpression Sim_c SimpleExpression { MkLeftC($1, $2); $$
+            | SimpleExpression Sim_c SimpleExpression { printf("aaa%s\n", $2); MkLeftC($1, $2); $$
               = MkRightC($3, $2);}
             ;
 
@@ -262,8 +261,8 @@
          {MakeTree(GTOp, NullExp(), NullExp()); }
        ;
  
- SimpleExpression : AOrMT { $$ = $1; }
-                  | Term { $$ = $1; }
+ SimpleExpression : Term { $$ = $1; }
+                  | AOrMT { $$ = $1; }
                   | SimpleExpression PLUSnum Term { $$ = MakeTree(AddOp, $1,
                     $3); }
                   | SimpleExpression MINUSnum Term { $$ = MakeTree(SubOp, $1,
@@ -293,8 +292,8 @@
                   | SCONSTnum { $$ = MakeLeaf(STRINGNode, $1); }
                   ;
  
- Variable : IDnum ID_c_m { $$ = MakeTree(VarOp, MakeLeaf(IDNode, $1), $2); }
-          | IDnum { $$ = MakeTree(VarOp, MakeLeaf(IDNode, $1), NullExp()); }
+ Variable : IDnum { $$ = MakeTree(VarOp, MakeLeaf(IDNode, $1), NullExp()); }  
+          | IDnum ID_c_m { $$ = MakeTree(VarOp, MakeLeaf(IDNode, $1), $2); }
           ;
  
  ID_c_m : ID_c_m ID_c { $$ = MakeTree(SelectOp, $2, $1); }
@@ -313,12 +312,12 @@
  int yyline, yycolumn;
  extern FILE *treelst;
  int main(void) {
-   treelst = stdout;
+   treelst=stdout;
    printf("test main function;\n");
    yyparse();
   }
 
  void yyerror(char *s) {
-   printf("yyerror: %s at line %d \n", s, yyline);
+   printf("yyerror: %s at line %d column %d \n", s, yyline, yycolumn);
  }
 

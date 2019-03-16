@@ -122,7 +122,7 @@ char* PreProcessString()
         {
             if (a[j] != SymbolChart[i][j]) break;
         }
-        if (j == SymbolLength[i])
+        if (j == SymbolLength[i] && (yyleng == SymbolLength[i]))
         {
             if (strlen(SymbolChart[i]) != 0)
             {
@@ -168,6 +168,18 @@ char* PreProcessString()
         else TableIndex = SearchIndex_Global;
         yylval.intg = TableIndex; 
         printf("%-10d%-10d%-20s%-10d\n", yyline, yycolumn, KeyWord, TableIndex);
+        
+        if(TableIndex == 0) printf("aaaaaa %s\n", SymbolChart[0]);
+        else{
+        for (int i =0; i<100; i++)
+        {
+            if(SymbolPositionNext[i] == TableIndex)
+            {
+                printf("aaaaaa %s\n", SymbolChart[i+1]);
+                break;
+            }
+        }
+        }
     }
     
     
@@ -175,6 +187,7 @@ char* PreProcessString()
     {
 
         printf("%-10d%-10d%-20s%-10s\n", yyline, yycolumn, KeyWord, a);
+
     }
     
  }
@@ -285,53 +298,53 @@ Whitespace2             [ \t]*
 ElseError               .    
 %%
 
-{VOIDnum}                 {return VOIDnum;}         
-{IFnum}                   {return IFnum;}
-{ELSEnum}                 {return ELSEnum;}
-{CLASSnum}                {return CLASSnum;} 
-{WHILEnum}                {return WHILEnum;} 
-{VALnum}                  {return VALnum;}
-{METHODnum}               {return METHODnum;}
-{RETURNnum}	          {return RETURNnum;}
-{INTnum}                  {return INTnum;}
-{PROGRAMnum}              {return PROGRAMnum;}
-{ANDnum}                  {return ANDnum;}
-{ASSGNnum}                {return ASSGNnum;}
-{DECLARATIONnum}          {return DECLARATIONnum;}
-{DOTnum}                  {return DOTnum;}
-{ENDDECLARATIONSnum}      {return ENDDECLARATIONSnum;}
-{EQUALnum}                {return EQUALnum;}
-{GTnum}                   {return GTnum;}
-{IDnum}                   {return IDnum;}
+{VOIDnum}                 {printf_result("VOIDnum"); return VOIDnum;}         
+{IFnum}                   {printf_result("IFnum"); return IFnum;}
+{ELSEnum}                 {printf_result("ELSEnum"); return ELSEnum;}
+{CLASSnum}                {printf_result("CLASSnum"); return CLASSnum;} 
+{WHILEnum}                {printf_result("WHILEnum"); return WHILEnum;} 
+{VALnum}                  {printf_result("VALnum"); return VALnum;}
+{METHODnum}               {printf_result("METHODnum"); return METHODnum;}
+{RETURNnum}	              {printf_result("RETURNnum"); return RETURNnum;}
+{INTnum}                  {printf_result("INTnum"); return INTnum;}
+{PROGRAMnum}              {printf_result("PROGRAMnum"); return PROGRAMnum;}
+{ANDnum}                  {printf_result("ANDnum"); return ANDnum;}
+{ASSGNnum}                {printf_result("ASSGNnum"); return ASSGNnum;}
+{DECLARATIONnum}          {printf_result("DECLARATIONnum"); return DECLARATIONnum;}
+{DOTnum}                  {printf_result("DOTnum"); return DOTnum;}
+{ENDDECLARATIONSnum}      {printf_result("ENDDECLARATIONSnum"); return ENDDECLARATIONSnum;}
+{EQUALnum}                {printf_result("EQUALnum"); return EQUALnum;}
+{GTnum}                   {printf_result("GTnum"); return GTnum;}
+{IDnum}                   {printf_result("IDnum"); return IDnum;}
 {BADID}                   {ErrorHandler("BADID");}
-{LBRACnum}                {return LBRACnum;}
-{LPARENnum}               {return LPARENnum;}
-{NEnum}                   {return NEnum;}
-{ORnum}                   {return ORnum;}
-{RBRACnum}                {return RBRACnum;}
-{RPARENnum}               {return RPARENnum;}  
-{SEMInum}                 {return SEMInum;}
-{COMMAnum}                {return COMMAnum;} 
-{DIVIDEnum}               {return DIVIDEnum;}
-{EQnum}                   {return EQnum;}
-{GEnum}                   {return GEnum;}
-{ICONSTnum}               {return ICONSTnum;}  
-{LBRACEnum}               {return LBRACEnum;}  
-{LEnum}                   {return LEnum;}
-{LTnum}                   {return LTnum;}
-{MINUSnum}                {return MINUSnum;} 
-{NOTnum}                  {return NOTnum;}
-{PLUSnum}                 {return PLUSnum;}
-{RBRACEnum}               {return RBRACEnum;} 
-{SCONSTnum}               {return SCONSTnum;}
+{LBRACnum}                {printf_result("LBRACnum"); return LBRACnum;}
+{LPARENnum}               {printf_result("LPARENnum"); return LPARENnum;}
+{NEnum}                   {printf_result("NEnum"); return NEnum;}
+{ORnum}                   {printf_result("ORnum"); return ORnum;}
+{RBRACnum}                {printf_result("RBRACnum"); return RBRACnum;}
+{RPARENnum}               {printf_result("RPARENnum"); return RPARENnum;}  
+{SEMInum}                 {printf_result("SEMInum"); return SEMInum;}
+{COMMAnum}                {printf_result("COMMAnum"); return COMMAnum;} 
+{DIVIDEnum}               {printf_result("DIVIDEnum"); return DIVIDEnum;}
+{EQnum}                   {printf_result("EQnum"); return EQnum;}
+{GEnum}                   {printf_result("GEnum"); return GEnum;}
+{ICONSTnum}               {printf_result("ICONSTnum"); return ICONSTnum;}  
+{LBRACEnum}               {printf_result("LBRACEnum"); return LBRACEnum;}  
+{LEnum}                   {printf_result("LEnum"); return LEnum;}
+{LTnum}                   {printf_result("LTnum"); return LTnum;}
+{MINUSnum}                {printf_result("MINUSnum"); return MINUSnum;} 
+{NOTnum}                  {printf_result("NOTnum"); return NOTnum;}
+{PLUSnum}                 {printf_result("PLUSnum"); return PLUSnum;}
+{RBRACEnum}               {printf_result("RBRACEnum"); return RBRACEnum;} 
+{SCONSTnum}               {printf_result("SCONSTnum"); return SCONSTnum;}
 {BADSCONST}               {ErrorHandler("BADSCONST");}
-{TIMESnum}                {return TIMESnum;} 
+{TIMESnum}                {printf_result("TIMESnum"); return TIMESnum;} 
 {COMMENT}                 {ProcessComment();}
 {BADCOMMENT}              {ProcessComment(); ErrorHandler("BADCOMMENT");}
 {Whitespace}        	  {yyline ++; yycolumn = 1;}  
 {Whitespace2}             {yycolumn += yyleng;}
 {ElseError}               {ErrorHandler("ElseError");}
-<<EOF>>                   {return EOFnum;}
+<<EOF>>                   {printf_result("EOFnum"); return EOFnum;}
 %%
 /*
 int main(int avgs, char *avgr[]) 
