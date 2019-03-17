@@ -300,8 +300,12 @@ char* getname(int i)
     if (i == 0) return SymbolChart[0];
     for(int a = 0; a < 100; a++)
     {
-        if(SymbolPositionNext[a] == i) return SymbolChart[a+1];
-    }   
+        if(SymbolPositionNext[a] == i) 
+        {
+            return SymbolChart[a+1];
+        }
+    }
+
    }
 
 
@@ -310,7 +314,10 @@ char* getstring(int i)
     if (i == 0) return SymbolChart[0];
     for(int a = 0; a < 100; a++)
     {
-        if(SymbolPositionNext[a] == i) return SymbolChart[a+1];
+        if(SymbolPositionNext[a] == i) 
+        {                                                       
+            return SymbolChart[a+1];
+        }
     }
    }
 

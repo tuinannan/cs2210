@@ -110,7 +110,7 @@ char* PreProcessString()
 
 /* This function is to check is the string or identifier already in the string
  * table*/
- int SearchTable(char *a)
+ int SearchTable(char *a, char *KeyWord)
  {
     int SearchFlag = 0;
     
@@ -122,7 +122,11 @@ char* PreProcessString()
         {
             if (a[j] != SymbolChart[i][j]) break;
         }
-        if (j == SymbolLength[i] && (yyleng == SymbolLength[i]))
+        if ((j == SymbolLength[i] && (yyleng == SymbolLength[i]) && 
+                strcmp(KeyWord, "IDnum")==0) ||
+            (j == SymbolLength[i] && ((yyleng - 2) == SymbolLength[i]) && 
+              strcmp(KeyWord, "SCONSTnum")==0) 
+                )
         {
             if (strlen(SymbolChart[i]) != 0)
             {
@@ -163,19 +167,19 @@ char* PreProcessString()
             m = PreProcessString();
         }
         else m =PreProcessID();
-        SearchResult = SearchTable(m); 
+        SearchResult = SearchTable(m, KeyWord); 
         if (SearchResult == 0) TableIndex = TableInsert(m);
         else TableIndex = SearchIndex_Global;
         yylval.intg = TableIndex; 
-        printf("%-10d%-10d%-20s%-10d\n", yyline, yycolumn, KeyWord, TableIndex);
+        //printf("%-10d%-10d%-20s%-10d\n", yyline, yycolumn, KeyWord, TableIndex);
         
-        if(TableIndex == 0) printf("aaaaaa %s\n", SymbolChart[0]);
+        if(TableIndex == 0) ;//printf("aaaaaa %s\n", SymbolChart[0]);
         else{
         for (int i =0; i<100; i++)
         {
             if(SymbolPositionNext[i] == TableIndex)
             {
-                printf("aaaaaa %s\n", SymbolChart[i+1]);
+         //       printf("aaaaaa %s\n", SymbolChart[i+1]);
                 break;
             }
         }
@@ -186,7 +190,7 @@ char* PreProcessString()
     else
     {
 
-        printf("%-10d%-10d%-20s%-10s\n", yyline, yycolumn, KeyWord, a);
+        //printf("%-10d%-10d%-20s%-10s\n", yyline, yycolumn, KeyWord, a);
 
     }
     
@@ -344,7 +348,6 @@ ElseError               .
 {Whitespace}        	  {yyline ++; yycolumn = 1;}  
 {Whitespace2}             {yycolumn += yyleng;}
 {ElseError}               {ErrorHandler("ElseError");}
-<<EOF>>                   {printf_result("EOFnum"); return EOFnum;}
 %%
 /*
 int main(int avgs, char *avgr[]) 
@@ -361,10 +364,10 @@ int main(int avgs, char *avgr[])
     while (returnval = yylex())
     {
       
-        printf_result(toString(returnval));
+ //       printf_result(toString(returnval));
     }
-    printf_result(toString(returnval));
-    printf("\n");
+//    printf_result(toString(returnval));
+//    printf("\n");
     printf("String Table:\n");
     for (int i = 0; i < SymbolNum; i++)
     {
@@ -384,8 +387,8 @@ int main(int avgs, char *avgr[])
 
     return 1;
 }
-*/
 
+*/
 int yywrap (void)
 {
     return 1;
